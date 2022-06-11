@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UI;
 
 namespace Loop
 {
 
     public class GameController : MonoBehaviour
     {
+        
+        [SerializeField] private MainMenuView mainMenuView;
         
         private MainMenuState mainMenuState;
         private GameState gameState;
@@ -20,7 +23,7 @@ namespace Loop
         {
             transitionToGameState += () => ChangeState(gameState);
             
-            mainMenuState = new MainMenuState(transitionToGameState);
+            mainMenuState = new MainMenuState(transitionToGameState, mainMenuView);
             gameState = new GameState();
 
 
