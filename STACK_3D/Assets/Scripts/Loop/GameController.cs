@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UI;
+using Input;
 
 namespace Loop
 {
@@ -11,6 +12,8 @@ namespace Loop
     {
         
         [SerializeField] private MainMenuView mainMenuView;
+
+        [SerializeField] private StackInput stackInput;
         
         private MainMenuState mainMenuState;
         private GameState gameState;

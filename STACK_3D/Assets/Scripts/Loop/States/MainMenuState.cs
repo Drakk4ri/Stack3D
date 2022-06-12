@@ -23,10 +23,7 @@ namespace Loop
         public void UpdateState()
         {
             Debug.Log("Dupa");
-            if(Input.GetKeyUp(KeyCode.Space))
-            {
-                transicionToGameState.Invoke();
-            }
+            
         }
         public void DisposeState()
         {
