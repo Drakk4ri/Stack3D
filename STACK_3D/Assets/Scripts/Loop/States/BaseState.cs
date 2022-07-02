@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Loop
 {
-    public interface IBaseState
+    public interface BaseState
     {
         void InitState();
         void UpdateState();

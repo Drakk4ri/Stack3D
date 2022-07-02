@@ -13,7 +13,7 @@ namespace Input
             onTap += callback;
         }        
 
-        public void ClearLteners()
+        public void ClearListeners()
         {
             onTap = null;
         }

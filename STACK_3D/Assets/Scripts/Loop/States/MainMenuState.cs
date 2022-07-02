@@ -6,7 +6,7 @@ using UI;
 
 namespace Loop
 {
-    public class MainMenuState : IBaseState
+    public class MainMenuState : BaseState
     {
         private Action transicionToGameState;
         private MainMenuView mainMenuView;
@@ -22,12 +22,11 @@ namespace Loop
         }
         public void UpdateState()
         {
-            Debug.Log("Dupa");
             
         }
         public void DisposeState()
         {
-            
+            mainMenuView.HideView();
         }
     } 
 }

@@ -3,12 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - First
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - GameObjects
   - Water
   - UI
   - 
@@ -40,4 +41,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: GameObjects
+    uniqueID: 3830841937
+    locked: 0
+  - name: UI
+    uniqueID: 2333195171
     locked: 0
