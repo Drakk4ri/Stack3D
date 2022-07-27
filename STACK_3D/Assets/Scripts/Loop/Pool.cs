@@ -9,7 +9,7 @@ namespace Loop
 
 
     {
-        private Stack<TItem> pooledObjects = new Stack<TItem>();   
+        private Queue<TItem> pooledObjects = new Queue<TItem>();   
 
         [SerializeField] private TItem orginalPrefab;
         
@@ -25,7 +25,7 @@ namespace Loop
                {
                 var obj = Instantiate(orginalPrefab);
                 obj.PrepareForDeactivate(transform);
-                pooledObjects.Push(obj);
+                pooledObjects.Enqueue(obj);
                }
         }
 
@@ -33,7 +33,7 @@ namespace Loop
         {
             if (pooledObjects.Count > 0)
             {
-                var obj = pooledObjects.Pop();
+                var obj = pooledObjects.Dequeue();
                 obj.PrepareForActivate(position);
                 return obj;
             }
@@ -50,7 +50,7 @@ namespace Loop
             if (pooledObjects.Count <= size)
             {
                 item.PrepareForDeactivate(transform);
-                pooledObjects.Push(item);
+                pooledObjects.Enqueue(item);
 
             }
             else

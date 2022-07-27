@@ -1,7 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -9,6 +10,7 @@ namespace UI
     {
         [SerializeField] private TextMeshProUGUI bestScore;
         [SerializeField] private TextMeshProUGUI lastScore;
+        [SerializeField] private Button startButton;
 
 
         public void UpdateBestSCore(int score)
@@ -17,9 +19,14 @@ namespace UI
 
         }
 
-        public void UpdateLastScore()
+        public void UpdateLastScore(int lastScore)
         {
             this.lastScore.text = lastScore.ToString();
+        }
+
+        public void StartGameButtonAddListener(Action callback)
+        {
+            startButton.onClick.AddListener(callback.Invoke);
         }
 
     } 

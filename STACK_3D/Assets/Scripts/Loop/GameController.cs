@@ -4,6 +4,7 @@ using UI;
 using Input;
 using Movement;
 using Points;
+using Data;
 
 namespace Loop
 {
@@ -17,6 +18,9 @@ namespace Loop
         [SerializeField]
         private GameView gameView;
 
+        [SerializeField]
+        private LoseView loseView;
+
         [SerializeField] 
         private StackInput stackInput;
         
@@ -28,11 +32,14 @@ namespace Loop
         
         private MovementSystem movementSystem;
         private PointSystem pointSystem;
-        
+        private SaveSystem saveSystem;
+
         private MainMenuState mainMenuState;
         private GameState gameState;
+        private LoseState loseState;
 
         private Action transitionToGameState;
+        private Action transitionToLoseState;
         
                 
         private BaseState currentlyActiveState;
@@ -40,15 +47,21 @@ namespace Loop
         private void Start()
         {
             transitionToGameState += () => ChangeState(gameState);
+            transitionToLoseState += () => ChangeState(loseState);
+
+            saveSystem = new SaveSystem();
+            saveSystem.Load();
 
             movementSystem = new MovementSystem(loweringSystem.InitItem);
+            pointSystem = new PointSystem(saveSystem.LoadedData);
 
-            pointSystem = new PointSystem();
 
-            mainMenuState = new MainMenuState(transitionToGameState, mainMenuView);
-                        gameState = new GameState(movementSystem, stackInput, pool, loweringSystem, pointSystem, gameView);
+            mainMenuState = new MainMenuState(transitionToGameState, mainMenuView, stackInput, pointSystem);
+            gameState = new GameState(movementSystem, stackInput, pool, loweringSystem, pointSystem, gameView, transitionToLoseState);
+            loseState = new LoseState(loseView, pointSystem, saveSystem);
 
-            ChangeState(gameState); //potem do zmainy jak zrobimy menu g³ówne
+
+            ChangeState(mainMenuState);
         }
 
         void Update()

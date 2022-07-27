@@ -7,7 +7,7 @@ namespace Movement
 
     public class MovementSystem
     {
-        private const int NUMBER_OF_COMBO_ITEMS = 5;
+        private const int NUMBER_OF_COMBO_ITEMS = 1;
 
         private StackItem itemCurrentlyInMovement;
         public StackItem ItemCurrentlyInMovement => itemCurrentlyInMovement;
@@ -34,7 +34,7 @@ namespace Movement
         public MovementSystem(StackItem lastItem)
         {
             this.lastItem = lastItem;
-            counter = Random.Range(0, 150);
+            counter = Random.Range(0, 20);
             lastItem.SetColour((counter / 100f) % 1f, 0.8f);
         }
 
@@ -56,6 +56,7 @@ namespace Movement
                 direction = Mathf.Sign(distance);
                 distance = Mathf.Abs(distance);
                 limit = lastItem.transform.localScale.x;
+             
             }
             else
             {
@@ -72,6 +73,7 @@ namespace Movement
             if (distance >= 0f && distance <= 0.1f)
             {
                 result = StopResult.ComboPoint;
+                curr.FlashOnce();
                 curr.transform.position = new Vector3(lastItem.transform.position.x,
                     curr.transform.position.y, lastItem.transform.position.z);
             }
@@ -88,7 +90,7 @@ namespace Movement
                 }
             }
 
-
+            curr.StartStoppedItem();
             lastItem = curr;
 
             lastItems[comboCounter % NUMBER_OF_COMBO_ITEMS] = lastItem;
@@ -124,7 +126,7 @@ namespace Movement
 
             itemCurrentlyInMovement.transform.position = currentlyActiveLine.GetPositionOnTheLine(currentTime);
 
-            if (currentTime> 1f)
+            if (currentTime >= 1f)
             {
                 startTime = Time.time;
                 currentlyActiveLine.Reversemovement();
@@ -174,6 +176,14 @@ namespace Movement
             xAxis.EditZValue(newZPosition);
 
             return fallingItem;
+        }
+        public void UpdateSpawnPos(Vector3 finalPosOfLastItem)
+        {
+            if (finalPosOfLastItem != Vector3.zero)
+            {
+                xAxis.EditZValue(finalPosOfLastItem.z);
+                zAxis.EditXValue(finalPosOfLastItem.x);
+            }
         }
     } 
 }

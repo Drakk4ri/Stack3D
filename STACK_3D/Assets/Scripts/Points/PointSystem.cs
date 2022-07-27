@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Movement;
-using UnityEngine.UI;
 using Loop;
 using DG.Tweening;
+using Data;
 
 namespace Points
 {
@@ -14,11 +12,23 @@ namespace Points
         private int points;
         private int comboPoints;
 
+        private int bestScore;
+        private int lastScore;
+
         private Action onComboCompleted;
 
         public int Points => points;
+        public int BestScore => bestScore;
+        public int LastScore => lastScore;
 
-        
+        Vector3 center = new Vector3(10f, -11f, 0); 
+
+        public PointSystem(PlayerData loadedData)
+        {
+            bestScore = loadedData.bestScore;
+            lastScore = loadedData.lastScore;
+        }
+
         public void ProcessStopResult(StopResult result)
         {
             switch (result)
@@ -31,39 +41,77 @@ namespace Points
                     AddPoint();
                     AddComboPoint();
                     break;
-
             }
-
         }
 
-        public void ProcessCombo(StackItem currentItem, StackItem[] lastItems)
+        public Vector3 ProcessCombo(StackItem currentItem, StackItem[] lastItems)
         {
-            Debug.Log(comboPoints);
+
+            Vector3 finalPos = Vector3.zero;
             if (comboPoints != 5)
-                return;
-            Debug.Log("po combo");
+                return finalPos;
+            
 
             foreach (var item in lastItems)
             {
-                RescaleItem(item);
+                finalPos = RescaleItem(item);
             }
 
             RescaleItem(currentItem);
+            currentItem.StartComboSound();
             onComboCompleted?.Invoke();
             ClearComboPoints();
 
+            return finalPos;
         }
 
-        private void RescaleItem(StackItem item)
+        private Vector3 RescaleItem(StackItem item)
         {
+
+            var beforeScaleX = item.transform.localScale.x;
+            var beforeScaleZ = item.transform.localScale.z;
+
             var possibleXScale = item.transform.localScale.x * 1.4f;
-            possibleXScale = Mathf.Clamp(possibleXScale, 0, 1f); //Clamp01(possibleXScale); - to samo tylko skrót.
+            possibleXScale = Mathf.Clamp01(possibleXScale);
 
             var possibleZScale = item.transform.localScale.z * 1.4f;
-            possibleZScale = Mathf.Clamp(possibleZScale, 0, 1f);
+            possibleZScale = Mathf.Clamp01(possibleZScale);
 
-            item.transform.DOScale(new Vector3(possibleXScale, 0.27099f, possibleZScale), 0.1f);
+            var deltaX = (possibleXScale - beforeScaleX) / 2f;
+            var deltaZ = (possibleZScale - beforeScaleZ) / 2f;
+
+            var finalPos = MoveItem(item, deltaZ, deltaX, true);
+
+            item.transform
+                .DOScale(new Vector3(possibleXScale,
+                        item.transform.localScale.y, possibleZScale),
+                    0.1f).OnComplete(() => MoveItem(item, deltaZ, deltaX, false));
+
+            return finalPos;
+
+
+        }
+
+        private Vector3 MoveItem(StackItem item, float deltaZ, float deltaX, bool dry)
+        {
             Debug.Log("dupa");
+            
+            var xDir = Mathf.Sign(center.x - item.transform.position.x);
+            var zDir = Mathf.Sign(center.z - item.transform.position.z);
+
+            var finalX = item.transform.position.x + deltaX * xDir;
+            var finalZ = item.transform.position.z + deltaZ * zDir;
+
+            var finalPos = new Vector3(finalX, item.transform.position.y, finalZ);
+
+            Debug.Log(finalPos);
+
+            if (!dry)
+                item.transform.DOMove(finalPos, 0.1f); // tu po zmianie 
+            //item.transform.position = new Vector3(finalX, item.transform.position.y, finalZ);
+
+            return finalPos;
+
         }
 
         private void AddPoint()
@@ -82,6 +130,12 @@ namespace Points
             comboPoints = 0;
         }
 
+        public void OnLose()
+        {
+            if (points > bestScore)
+                bestScore = points;
+            lastScore = points;
+        }
         
 
     }

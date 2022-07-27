@@ -3,7 +3,7 @@ using Input;
 using Points;
 using UI;
 using UnityEngine;
-
+using System;
 
 namespace Loop
 {
@@ -15,10 +15,11 @@ namespace Loop
         private LoweringSystem loweringSystem;
         private PointSystem pointSystem;
         private GameView gameView;
+        private Action transitionToLoseState;
 
         
         public GameState(MovementSystem movementSystem, StackInput stackInput, StackItemPool pool, 
-            LoweringSystem loweringSystem, PointSystem pointSystem, GameView gameView)
+            LoweringSystem loweringSystem, PointSystem pointSystem, GameView gameView, Action transitionToLoseState)
         {
             this.movementSystem = movementSystem;
             this.stackInput = stackInput;
@@ -26,6 +27,7 @@ namespace Loop
             this.loweringSystem = loweringSystem;
             this.pointSystem = pointSystem;
             this.gameView = gameView;
+            this.transitionToLoseState = transitionToLoseState;
         }
         
         public void InitState()
@@ -49,6 +51,7 @@ namespace Loop
             var data = movementSystem.StopItem();
             if(data.Result == StopResult.GameOver)
             {
+                transitionToLoseState.Invoke();
                 return;
             }
 
@@ -63,8 +66,9 @@ namespace Loop
             }
             loweringSystem.LowerItem();
             movementSystem.GenerateNewItem(pool);
-            pointSystem.ProcessCombo(movementSystem.ItemCurrentlyInMovement, data.lastItems);
-
+            var finalPos = 
+                pointSystem.ProcessCombo(movementSystem.ItemCurrentlyInMovement, data.lastItems);
+            movementSystem.UpdateSpawnPos(finalPos);
         }
     } 
 }

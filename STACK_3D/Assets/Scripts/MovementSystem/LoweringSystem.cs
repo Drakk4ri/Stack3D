@@ -13,7 +13,7 @@ namespace Movement
 
         public StackItem InitItem => gameplayItems[0];
         float timeTolowerItem = 0.4f;
-        float howMuchLowerItem = 0.27099f;
+        float howMuchLowerItem = 0.271f;
 
         public void AddNewItem(StackItem item)
         {
